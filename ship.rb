@@ -14,6 +14,10 @@ class Point
     @x, @y = x, y
   end
   
+  def to_s
+    "(#{@x},#{@y})"
+  end
+  
   def == (obj)
     @x == obj.x and @y == obj.y
   end
@@ -39,9 +43,19 @@ class Ship
     @x += x
   end
   
+  def move_to_x(x)
+    raise "x must integer" unless x.is_a? Integer
+    @x = x
+  end
+  
   def move_by_y(y)
     raise "y must integer" unless y.is_a? Integer
     @y += y
+  end
+  
+  def move_to_y(y)
+    raise "y must integer" unless y.is_a? Integer
+    @y = y
   end
     
   def coords
@@ -66,7 +80,12 @@ class Ship
     return false
   end
   
+  def to_s
+    coords.to_s
+  end
+  
   def self.get_impacted_ships ships
+    raise "ships not nul" if ships == nil
     result = []
     (0 ... ships.length-1).each{ |i|
       (i+1 ... ships.length).each{ |j|

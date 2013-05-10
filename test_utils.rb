@@ -2,6 +2,7 @@ require 'unittest'
 require 'utils'
 
 class UtilsTest < Test::Unit::TestCase
+ 
   def test_impacted_points
     assert_equal(true, Utils::impacted_points?(1, 1, 1, 1))
     assert_equal(true, Utils::impacted_points?(0, 0, 1, 1))

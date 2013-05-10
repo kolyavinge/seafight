@@ -1,4 +1,5 @@
 require 'ship'
+require 'ship_location_strategy'
 
 class Field
   
@@ -20,9 +21,18 @@ class Field
   def initialize
     @size = 10
     @ships = Field.start_ships
+    #locate_all_ships
   end
   
 #  def correct?
 #    all_ships_in_field?
 #  end
+  private
+  
+  def locate_all_ships
+    location_strategy = ShipLocationStrategy.new
+    location_strategy.field_size = @size
+    location_strategy.ships = @ships
+    location_strategy.locate
+  end
 end

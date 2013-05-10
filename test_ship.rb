@@ -82,29 +82,38 @@ class ShipTest < Test::Unit::TestCase
     assert_equal(false, ship.in_field_with_size?(10))
   end
   
-  def test_is_impacted_1
+  def test_impacted
+    ship = Ship.new(4)
+    assert_equal(true, ship.impacted?(ship))
+  end
+  
+  def test_impacted_1
     ship = Ship.new(4)
     ship1 = Ship.new(4)
     assert_equal(true, ship.impacted?(ship1))
+    assert_equal(true, ship1.impacted?(ship))
   end
   
-  def test_is_impacted_2
+  def test_impacted_2
     ship = Ship.new(4)
     ship1 = Ship.new(4)
     ship1.move_by_y 1
     assert_equal(true, ship.impacted?(ship1))
+    assert_equal(true, ship1.impacted?(ship))
   end
   
-  def test_is_impacted_3
+  def test_impacted_3
     ship = Ship.new(4)
     ship1 = Ship.new(4, VERTICAL, 4, 0)
     assert_equal(true, ship.impacted?(ship1))
+    assert_equal(true, ship1.impacted?(ship))
   end
   
-  def test_is_impacted_4
-    ship = Ship.new(2)
-    ship1 = Ship.new(4, VERTICAL, 3, 0)
-    assert_equal(false, ship.impacted?(ship1))
+  def test_impacted_4
+    ship = Ship.new(1, VERTICAL, 4, 4)
+    ship1 = Ship.new(3, VERTICAL, 5, 5)
+    assert_equal(true, ship.impacted?(ship1))
+    assert_equal(true, ship1.impacted?(ship))
   end
   
   def test_check_two_impacted_ships
