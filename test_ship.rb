@@ -74,4 +74,63 @@ class ShipTest < Test::Unit::TestCase
     ship.rotate
     assert_equal(HORIZONTAL, ship.layout)
   end
+  
+  def test_in_field?
+    ship = Ship.new(4)
+    assert_equal(true, ship.in_field_with_size?(10))
+    ship.move_by_y -2
+    assert_equal(false, ship.in_field_with_size?(10))
+  end
+  
+  def test_is_impacted_1
+    ship = Ship.new(4)
+    ship1 = Ship.new(4)
+    assert_equal(true, ship.impacted?(ship1))
+  end
+  
+  def test_is_impacted_2
+    ship = Ship.new(4)
+    ship1 = Ship.new(4)
+    ship1.move_by_y 1
+    assert_equal(true, ship.impacted?(ship1))
+  end
+  
+  def test_is_impacted_3
+    ship = Ship.new(4)
+    ship1 = Ship.new(4, VERTICAL, 4, 0)
+    assert_equal(true, ship.impacted?(ship1))
+  end
+  
+  def test_is_impacted_4
+    ship = Ship.new(2)
+    ship1 = Ship.new(4, VERTICAL, 3, 0)
+    assert_equal(false, ship.impacted?(ship1))
+  end
+  
+  def test_check_two_impacted_ships
+    ship1 = Ship.new(3, HORIZONTAL, 0, 0)
+    ship2 = Ship.new(4, VERTICAL, 0, 1)
+    impacted_ships = Ship.get_impacted_ships [ship1, ship2]
+    assert_equal(2, impacted_ships.length)
+    assert_equal(true, impacted_ships.include?(ship1))
+    assert_equal(true, impacted_ships.include?(ship2))
+  end
+  
+  def test_check_two_impacted_and_out_of_world_ships
+    ship1 = Ship.new(3, HORIZONTAL, -2, 0)
+    ship2 = Ship.new(4, VERTICAL, 1, 1)
+    impacted_ships = Ship.get_impacted_ships [ship1, ship2]
+    assert_equal(2, impacted_ships.length)
+    assert_equal(true, impacted_ships.include?(ship1))
+    assert_equal(true, impacted_ships.include?(ship2))
+  end
+  
+  def test_check_two_crossed_ships
+    ship1 = Ship.new(4, HORIZONTAL, 1, 4)
+    ship2 = Ship.new(4, VERTICAL, 2, 1)
+    impacted_ships = Ship.get_impacted_ships [ship1, ship2]
+    assert_equal(2, impacted_ships.length)
+    assert_equal(true, impacted_ships.include?(ship1))
+    assert_equal(true, impacted_ships.include?(ship2))
+  end
 end

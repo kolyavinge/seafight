@@ -1,3 +1,5 @@
+require 'utils'
+
 #ship layouts
 VERTICAL   = 1
 HORIZONTAL = 2
@@ -48,5 +50,30 @@ class Ship
     else
       Array.new(@size){ |index| Point.new(@x + index, @y) }
     end
+  end
+  
+  def in_field_with_size? field_size
+    coords.all?{ |p| p.x >= 0 and p.y >= 0 and p.x < field_size and p.y < field_size }
+  end
+  
+  def impacted? other_ship
+    coords.each{ |p1|
+      other_ship.coords.each{ |p2|
+        return true if Utils.impacted_points? p1.x, p1.y, p2.x, p2.y
+      }
+    }
+
+    return false
+  end
+  
+  def self.get_impacted_ships ships
+    result = []
+    (0 ... ships.length-1).each{ |i|
+      (i+1 ... ships.length).each{ |j|
+        ship1, ship2 = ships[i], ships[j]
+        result << ship1 << ship2 if ship1.impacted? ship2
+      }
+    }
+    result
   end
 end
