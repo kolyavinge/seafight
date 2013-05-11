@@ -22,12 +22,12 @@ class ShipLocationStrategyTest < Test::Unit::TestCase
   end
 
   def assert_no_impacted_ships
-    impacted_ships = Ship.get_impacted_ships(@strategy.ships).any?
+    impacted_ships = Ship.get_impacted(@strategy.ships).any?
     assert_equal false, impacted_ships, "impacted ships"
   end
 
   def assert_all_ships_in_field
-    all_ships_in_field = @strategy.ships.all?{ |ship| ship.in_field_with_size? @strategy.field_size }
+    all_ships_in_field = @strategy.ships.all?{ |ship| ship.in_field? @strategy.field_size }
     assert_equal true, all_ships_in_field, "out of field ships"
   end
 end

@@ -6,36 +6,35 @@ class ShipLocationStrategy
   
   def locate
     check_arguments
-    done = try_fix_all_ships
+    done = false
     while not done
-      done = try_fix_all_ships
+      done = try_locate_ships
     end
   end
 
   private
 
-  def try_fix_all_ships
+  def try_locate_ships
     ships_queue = @ships.clone
-    @fixed_ships = []
+    @located_ships = []
     while ships_queue.any?
-      ship = ships_queue.sample
-      return false if not can_fix ship
-      @fixed_ships << ship
+      ship = ships_queue.first
+      return false if not can_locate ship
+      @located_ships << ship
       ships_queue.delete ship
     end
 
     return true
   end
 
-  def can_fix ship
+  def can_locate ship
     attemp = 10
     while attemp > 0
-      x = Random.rand @field_size
-      y = Random.rand @field_size
+      x, y = Random.rand(@field_size), Random.rand(@field_size)
       ship.move_to_x x
       ship.move_to_y y
       ship.rotate if Random.rand(2) == 1
-      done = (ship.in_field_with_size? @field_size) && (@fixed_ships.all?{ |fixed_ship| not fixed_ship.impacted?(ship) })
+      done = (ship.in_field? @field_size) && (@located_ships.all?{ |located_ship| not located_ship.impacted? ship })
       return true if done
       attemp -= 1
     end

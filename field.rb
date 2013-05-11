@@ -21,15 +21,19 @@ class Field
   def initialize
     @size = 10
     @ships = Field.start_ships
-    #locate_all_ships
   end
   
-#  def correct?
-#    all_ships_in_field?
-#  end
-  private
+  def correct?
+    @ships.all?{ |ship| ship.in_field? @size } && Ship.get_impacted(ships).empty?
+  end
   
-  def locate_all_ships
+  def incorrect_ships
+    out_of_field = @ships.select{ |ship| not ship.in_field @size }.to_a
+    impacted = Ship.get_impacted ships
+    out_of_field | impacted
+  end
+  
+  def locate_ships
     location_strategy = ShipLocationStrategy.new
     location_strategy.field_size = @size
     location_strategy.ships = @ships

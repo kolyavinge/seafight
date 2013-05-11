@@ -77,9 +77,9 @@ class ShipTest < Test::Unit::TestCase
   
   def test_in_field?
     ship = Ship.new(4)
-    assert_equal(true, ship.in_field_with_size?(10))
+    assert_equal(true, ship.in_field?(10))
     ship.move_by_y -2
-    assert_equal(false, ship.in_field_with_size?(10))
+    assert_equal(false, ship.in_field?(10))
   end
   
   def test_impacted
@@ -119,7 +119,7 @@ class ShipTest < Test::Unit::TestCase
   def test_check_two_impacted_ships
     ship1 = Ship.new(3, HORIZONTAL, 0, 0)
     ship2 = Ship.new(4, VERTICAL, 0, 1)
-    impacted_ships = Ship.get_impacted_ships [ship1, ship2]
+    impacted_ships = Ship.get_impacted [ship1, ship2]
     assert_equal(2, impacted_ships.length)
     assert_equal(true, impacted_ships.include?(ship1))
     assert_equal(true, impacted_ships.include?(ship2))
@@ -128,7 +128,7 @@ class ShipTest < Test::Unit::TestCase
   def test_check_two_impacted_and_out_of_world_ships
     ship1 = Ship.new(3, HORIZONTAL, -2, 0)
     ship2 = Ship.new(4, VERTICAL, 1, 1)
-    impacted_ships = Ship.get_impacted_ships [ship1, ship2]
+    impacted_ships = Ship.get_impacted [ship1, ship2]
     assert_equal(2, impacted_ships.length)
     assert_equal(true, impacted_ships.include?(ship1))
     assert_equal(true, impacted_ships.include?(ship2))
@@ -137,7 +137,7 @@ class ShipTest < Test::Unit::TestCase
   def test_check_two_crossed_ships
     ship1 = Ship.new(4, HORIZONTAL, 1, 4)
     ship2 = Ship.new(4, VERTICAL, 2, 1)
-    impacted_ships = Ship.get_impacted_ships [ship1, ship2]
+    impacted_ships = Ship.get_impacted [ship1, ship2]
     assert_equal(2, impacted_ships.length)
     assert_equal(true, impacted_ships.include?(ship1))
     assert_equal(true, impacted_ships.include?(ship2))

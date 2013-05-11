@@ -66,7 +66,7 @@ class Ship
     end
   end
   
-  def in_field_with_size? field_size
+  def in_field? field_size
     coords.all?{ |p| p.x >= 0 and p.y >= 0 and p.x < field_size and p.y < field_size }
   end
   
@@ -84,7 +84,7 @@ class Ship
     coords.to_s
   end
   
-  def self.get_impacted_ships ships
+  def self.get_impacted ships
     raise "ships not nul" if ships == nil
     result = []
     (0 ... ships.length-1).each{ |i|

@@ -12,6 +12,13 @@ class FieldTest < Test::Unit::TestCase
     assert_ships_size_count(field.ships, 2, 3)
     assert_ships_size_count(field.ships, 3, 2)
     assert_ships_size_count(field.ships, 4, 1)
+    assert_equal(false, field.correct?)
+  end
+  
+  def test_locate
+    field = Field.new
+    field.locate_ships
+    assert_equal(true, field.correct?)
   end
   
   def assert_ships_size_count(ships, ship_size, expect_ships_count)
