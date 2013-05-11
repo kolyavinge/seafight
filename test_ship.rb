@@ -10,6 +10,7 @@ class ShipTest < Test::Unit::TestCase
     assert_equal(HORIZONTAL, ship.layout)
     assert_equal(0, ship.x)
     assert_equal(0, ship.y)
+    assert_equal(false, ship.is_fixed?)
   end
   
   def test_constructor
@@ -18,6 +19,7 @@ class ShipTest < Test::Unit::TestCase
     assert_equal(VERTICAL, ship.layout)
     assert_equal(3, ship.x)
     assert_equal(4, ship.y)
+    assert_equal(false, ship.is_fixed?)
   end
   
   def test_coords
@@ -141,5 +143,27 @@ class ShipTest < Test::Unit::TestCase
     assert_equal(2, impacted_ships.length)
     assert_equal(true, impacted_ships.include?(ship1))
     assert_equal(true, impacted_ships.include?(ship2))
+  end
+  
+  def test_fix
+    ship = Ship.new(4, VERTICAL, 2, 1)
+    ship.fix
+    assert_equal(true, ship.is_fixed?)
+  end
+  
+  def test_already_fixed
+    ship = Ship.new(4, VERTICAL, 2, 1)
+    ship.fix
+    assert_raise TypeError do ship.fix end
+  end
+  
+  def test_fixed_not_move_and_rotate
+    ship = Ship.new(4, VERTICAL, 2, 1)
+    ship.fix
+    assert_raise TypeError do ship.move_to_x 1 end
+    assert_raise TypeError do ship.move_to_y 1 end
+    assert_raise TypeError do ship.move_by_x 1 end
+    assert_raise TypeError do ship.move_by_y 1 end
+    assert_raise TypeError do ship.rotate end
   end
 end

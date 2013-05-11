@@ -6,6 +6,12 @@ class Matrix
   end
 end
 
+class Array
+  def within? other_array
+    all?{ |elem| other_array.include? elem }
+  end
+end
+
 module Utils
   def Utils.impacted_points? x1, y1, x2, y2
     ((x1 - x2).abs < 2) && ((y1 - y2).abs < 2)

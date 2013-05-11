@@ -1,9 +1,10 @@
+require 'utils'
 require 'ship'
 require 'ship_location_strategy'
 
 class Field
   
-  attr_reader :ships, :size
+  attr_reader :ships, :size, :strikes
   
   def self.start_ships
     [Ship.new(1),
@@ -21,6 +22,8 @@ class Field
   def initialize
     @size = 10
     @ships = Field.start_ships
+    @fixed = false
+    @strikes = []
   end
   
   def correct?
@@ -28,9 +31,34 @@ class Field
   end
   
   def incorrect_ships
-    out_of_field = @ships.select{ |ship| not ship.in_field @size }.to_a
+    out_of_field = @ships.select{ |ship| not ship.in_field? @size }.to_a
     impacted = Ship.get_impacted ships
     out_of_field | impacted
+  end
+  
+  def is_fixed?
+    @fixed
+  end
+  
+  def fix
+    raise TypeError.new("field already fixed") if @fixed
+    raise TypeError.new("field is incorrect")  if not correct?
+    @fixed = true
+    @ships.each{ |ship| ship.fix }
+  end
+  
+  def strike_to x, y
+    raise TypeError.new("can't strike - field not fixed") if not @fixed
+    raise "x must integer" unless x.is_a? Integer
+    raise "y must integer" unless y.is_a? Integer
+    p = Point.new(x, y)
+    return false if (x < 0) || (y < 0) || (x >= @size) || (y >= @size) || (@strikes.include? p)
+    @strikes << p
+    return true
+  end
+  
+  def all_ships_destroyed?
+    @ships.all?{ |ship| ship.coords.within? @strikes }
   end
   
   def locate_ships

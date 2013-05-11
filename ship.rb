@@ -32,28 +32,34 @@ class Ship
     @size = size
     @layout = layout
     @x, @y = x, y
+    @fixed = false
   end
   
   def rotate
+    raise TypeError.new("ship fixed") if @fixed
     @layout = if @layout == HORIZONTAL then VERTICAL else HORIZONTAL end
   end
   
   def move_by_x(x)
+    raise TypeError.new("ship fixed") if @fixed
     raise "x must integer" unless x.is_a? Integer
     @x += x
   end
   
   def move_to_x(x)
+    raise TypeError.new("ship fixed") if @fixed
     raise "x must integer" unless x.is_a? Integer
     @x = x
   end
   
   def move_by_y(y)
+    raise TypeError.new("ship fixed") if @fixed
     raise "y must integer" unless y.is_a? Integer
     @y += y
   end
   
   def move_to_y(y)
+    raise TypeError.new("ship fixed") if @fixed
     raise "y must integer" unless y.is_a? Integer
     @y = y
   end
@@ -82,6 +88,15 @@ class Ship
   
   def to_s
     coords.to_s
+  end
+  
+  def fix
+    raise TypeError.new("ship already fixed") if @fixed
+    @fixed = true
+  end
+  
+  def is_fixed?
+    @fixed
   end
   
   def self.get_impacted ships
