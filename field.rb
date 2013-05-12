@@ -70,6 +70,10 @@ class Field
     @ships.all?{ |ship| ship.coords.within? @strikes }
   end
   
+  def destroyed_ships
+    @ships.select{ |ship| ship.coords.within? @strikes }.to_a
+  end
+  
   def locate_ships
     location_strategy = ShipLocationStrategy.new
     location_strategy.field_size = @size

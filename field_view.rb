@@ -11,23 +11,28 @@ class FieldView
     @cell_size = 32
     @size = @field.size * @cell_size
     @need_render_ships = need_render_ships
-    @white_brush = Qt::Brush.new Qt::white
-    @grey_brush = Qt::Brush.new Qt::gray
-    @red_brush = Qt::Brush.new Qt::red
-    @blue_brush = Qt::Brush.new Qt::blue
-    @black_pen = Qt::Pen.new Qt::black do setStyle Qt::SolidLine end
+    @white_brush   = Qt::Brush.new(Qt::white)
+    @black_brush   = Qt::Brush.new(Qt::black)
+    @grey_brush    = Qt::Brush.new(Qt::gray)
+    @red_brush     = Qt::Brush.new(Qt::Color.new(255,50,50))
+    @darkred_brush = Qt::Brush.new(Qt::Color.new(120,10,10))
+    @blue_brush    = Qt::Brush.new(Qt::Color.new(60,170,210))
+    @black_pen     = Qt::Pen.new(Qt::black) { setStyle Qt::SolidLine }
   end
   
   def render painter
+    # shadow
+    painter.fillRect @offset_x+3, @offset_y+3, @size, @size, @black_brush
     # white background
     painter.fillRect @offset_x, @offset_y, @size, @size, @white_brush
     # ships
     if @need_render_ships
-      incorrect_ships = @field.incorrect_ships
-      @field.ships.each{ |ship| render_ship ship, incorrect_ships, painter }
+      @field.ships.each{ |ship| render_ship ship, painter }
     end
     # strikes
     @field.strikes.each{ |strike| render_strike strike, painter }
+    # destroy ships
+    @field.destroyed_ships.each{ |ship| render_destroyed_ship ship, painter }
     # black border
     painter.setPen @black_pen
     painter.drawRect @offset_x, @offset_y, @size, @size
@@ -39,10 +44,16 @@ class FieldView
   
   private
   
-  def render_ship ship, incorrect_ships, painter
-    brush = if incorrect_ships.include? ship then @red_brush else @grey_brush end
+  def render_ship ship, painter
+    brush = if @field.incorrect_ships.include? ship then @red_brush else @grey_brush end
     ship.coords.each{ |p|
       painter.fillRect @offset_x + p.x * @cell_size, @offset_y + p.y * @cell_size, @cell_size, @cell_size, brush
+    }
+  end
+  
+  def render_destroyed_ship ship, painter
+    ship.coords.each{ |p|
+      painter.fillRect @offset_x + p.x * @cell_size, @offset_y + p.y * @cell_size, @cell_size, @cell_size, @darkred_brush
     }
   end
   
