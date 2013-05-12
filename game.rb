@@ -10,6 +10,7 @@ GAMESTATE_ENEMY_WIN  = 4
 class Game
 
   attr_reader :player_field, :enemy_field, :state
+  attr_accessor :enemy_brain
   
   def initialize
     @state = GAMESTATE_PREPARE
@@ -17,6 +18,7 @@ class Game
     @enemy_field = Field.new
     @player_field.locate_ships
     @enemy_field.locate_ships
+    @enemy_brain = RandomEnemyBrain.new
   end
 
   def start_battle
@@ -30,22 +32,42 @@ class Game
     end
   end
   
-  def player_strike_to x, y
+  def strike_to x, y
     raise TypeError.new("battle not started") unless state == GAMESTATE_BATTLE
     
-    player_strike_success = @enemy_field.strike_to x, y
-    return false unless player_strike_success
-    if @enemy_field.all_ships_destroyed?
-      @state = GAMESTATE_PLAYER_WIN
-      return true
+    player_strike_result = @enemy_field.strike_to x, y
+    return if player_strike_result == STRIKE_WRONG
+    
+    if player_strike_result == STRIKE_TARGET
+      if @enemy_field.all_ships_destroyed?
+        @state = GAMESTATE_PLAYER_WIN
+      end
+      return
     end
     
-    @player_field.strike_to 1, 1
-    if @player_field.all_ships_destroyed?
-      @state = GAMESTATE_ENEMY_WIN
-      return true
+    p = @enemy_brain.get_strike_point @player_field
+    while (enemy_strike_result = @player_field.strike_to p.x, p.y) == STRIKE_TARGET
+      if @player_field.all_ships_destroyed?
+        @state = GAMESTATE_ENEMY_WIN
+        return
+      end
+      p = @enemy_brain.get_strike_point @player_field
     end
-
-    return true
   end
 end
+
+class RandomEnemyBrain
+  def get_strike_point player_field
+    point = nil
+    done = false
+    while not done
+      x, y = Random.rand(player_field.size), Random.rand(player_field.size)
+      point = Point.new(x, y)
+      done = (not player_field.strikes.include? point)
+    end
+    
+    return point
+  end
+end
+
+

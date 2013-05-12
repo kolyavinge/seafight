@@ -2,9 +2,14 @@ require 'utils'
 require 'ship'
 require 'ship_location_strategy'
 
+STRIKE_WRONG  = 1
+STRIKE_MISS   = 2
+STRIKE_TARGET = 3
+
 class Field
   
-  attr_reader :ships, :size, :strikes
+  attr_reader   :size, :strikes
+  attr_accessor :ships
   
   def self.start_ships
     [Ship.new(1),
@@ -52,9 +57,13 @@ class Field
     raise "x must integer" unless x.is_a? Integer
     raise "y must integer" unless y.is_a? Integer
     p = Point.new(x, y)
-    return false if (x < 0) || (y < 0) || (x >= @size) || (y >= @size) || (@strikes.include? p)
+    return STRIKE_WRONG if (x < 0) || (y < 0) || (x >= @size) || (y >= @size) || (@strikes.include? p)
     @strikes << p
-    return true
+    if @ships.any?{ |ship| ship.coords.include? p }
+      return STRIKE_TARGET
+    else
+      return STRIKE_MISS
+    end
   end
   
   def all_ships_destroyed?

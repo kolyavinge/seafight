@@ -45,12 +45,25 @@ class FieldTest < Test::Unit::TestCase
     assert_raise TypeError do field.fix end
   end
   
-  def test_strike
+  def test_strike_target
     field = Field.new
-    field.locate_ships
+    field.ships.clear
+    field.ships.push Ship.new(1, HORIZONTAL, 1, 3)
     field.fix
     result = field.strike_to x=1, y=3
-    assert_equal(true, result)
+    assert_equal(STRIKE_TARGET, result)
+    assert_equal(1, field.strikes.length)
+    assert_equal(1, field.strikes.first.x)
+    assert_equal(3, field.strikes.first.y)
+  end
+  
+  def test_strike_miss
+    field = Field.new
+    field.ships.clear
+    field.ships.push Ship.new(1, HORIZONTAL, 0, 0)
+    field.fix
+    result = field.strike_to x=1, y=3
+    assert_equal(STRIKE_MISS, result)
     assert_equal(1, field.strikes.length)
     assert_equal(1, field.strikes.first.x)
     assert_equal(3, field.strikes.first.y)
@@ -60,25 +73,26 @@ class FieldTest < Test::Unit::TestCase
     field = Field.new
     field.locate_ships
     field.fix
-    assert_equal(false, field.strike_to(x=1,  y=-2))
-    assert_equal(false, field.strike_to(x=-1, y=-2))
-    assert_equal(false, field.strike_to(x=11, y=-2))
-    assert_equal(false, field.strike_to(x=11, y=2))
-    assert_equal(false, field.strike_to(x=11, y=20))
-    assert_equal(false, field.strike_to(x=1,  y=20))
-    assert_equal(false, field.strike_to(x=-1, y=20))
-    assert_equal(false, field.strike_to(x=-1, y=2))
+    assert_equal(STRIKE_WRONG, field.strike_to(x=1,  y=-2))
+    assert_equal(STRIKE_WRONG, field.strike_to(x=-1, y=-2))
+    assert_equal(STRIKE_WRONG, field.strike_to(x=11, y=-2))
+    assert_equal(STRIKE_WRONG, field.strike_to(x=11, y=2))
+    assert_equal(STRIKE_WRONG, field.strike_to(x=11, y=20))
+    assert_equal(STRIKE_WRONG, field.strike_to(x=1,  y=20))
+    assert_equal(STRIKE_WRONG, field.strike_to(x=-1, y=20))
+    assert_equal(STRIKE_WRONG, field.strike_to(x=-1, y=2))
     assert_equal(true, field.strikes.empty?)
   end
   
   def test_strike_in_not_empty_cell
     field = Field.new
-    field.locate_ships
+    field.ships.clear
+    field.ships.push Ship.new(1, HORIZONTAL, 1, 3)
     field.fix
-    result = field.strike_to x=1, y=2
-    assert_equal(true, result)
-    result = field.strike_to x=1, y=2
-    assert_equal(false, result)
+    result = field.strike_to x=1, y=3
+    assert_equal(STRIKE_TARGET, result)
+    result = field.strike_to x=1, y=3
+    assert_equal(STRIKE_WRONG, result)
   end
   
   def test_strike_in_not_fixed_field

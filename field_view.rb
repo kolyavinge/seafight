@@ -14,8 +14,8 @@ class FieldView
     @white_brush = Qt::Brush.new Qt::white
     @grey_brush = Qt::Brush.new Qt::gray
     @red_brush = Qt::Brush.new Qt::red
-    @black_pen = Qt::Pen.new Qt::black
-    @black_pen.setStyle Qt::SolidLine
+    @blue_brush = Qt::Brush.new Qt::blue
+    @black_pen = Qt::Pen.new Qt::black do setStyle Qt::SolidLine end
   end
   
   def render painter
@@ -26,6 +26,8 @@ class FieldView
       incorrect_ships = @field.incorrect_ships
       @field.ships.each{ |ship| render_ship ship, incorrect_ships, painter }
     end
+    # strikes
+    @field.strikes.each{ |strike| render_strike strike, painter }
     # black border
     painter.setPen @black_pen
     painter.drawRect @offset_x, @offset_y, @size, @size
@@ -43,4 +45,13 @@ class FieldView
       painter.fillRect @offset_x + p.x * @cell_size, @offset_y + p.y * @cell_size, @cell_size, @cell_size, brush
     }
   end
+  
+  def render_strike strike, painter
+    target = @field.ships.any?{ |ship| ship.coords.include? strike }
+    brush = if target then @red_brush else @blue_brush end
+    painter.fillRect @offset_x + strike.x * @cell_size, @offset_y + strike.y * @cell_size, @cell_size, @cell_size, brush
+  end
 end
+
+
+
