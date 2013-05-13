@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'Qt4'
 require 'ship'
 require 'game'
